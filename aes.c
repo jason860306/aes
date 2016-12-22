@@ -311,7 +311,7 @@ static int ReadData(const char *pFilePath, char **ppInData, int *pDataLen)
 		nRet = -1;
 		goto Exit;
 	}
-	bzero(*ppInData, nFSize + 1);
+	memset(*ppInData, 0, nFSize + 1);
 	if (-1 == lseek(nFd, 0, SEEK_SET))
 	{
 		fprintf(stderr, "set to the beginning of file failed: %d(%s)\n", errno, strerror(errno));
@@ -362,7 +362,7 @@ static int AESEncrypt(const char *pKey, int nKeyLen, const char* pInData,
 	{
 		return -1;
 	}
-
+#if 0
 	if (nInLen % AES_BLOCK_SIZE != 0)
 	{
 		fprintf(stderr,
@@ -370,16 +370,16 @@ static int AESEncrypt(const char *pKey, int nKeyLen, const char* pInData,
 				nInLen, AES_BLOCK_SIZE);
 		return -1;
 	}
-
+#endif
 	if (NULL == *ppOutData)
 	{
-		*pOutLen = nInLen;
-		if (NULL == (*ppOutData = (char *)malloc(nInLen + 1)))
+		*pOutLen = AES_BLOCK_SIZE;
+		if (NULL == (*ppOutData = (char *)malloc(AES_BLOCK_SIZE + 1)))
 		{
 			fprintf(stderr, "malloc memory failed: %d(%s)\n", errno, strerror(errno));
 			return -1;
 		}
-		bzero(*ppOutData, nInLen + 1);
+		memset(*ppOutData, 0, nInLen + 1);
 	}
 	else if (*pOutLen < nInLen)
 	{
@@ -433,6 +433,7 @@ static int AESEncryptReadable(const char *pKey, int nKeyLen, const char* pInData
 		nRet = -1;
 		goto Exit;
 	}
+
 	if (0 != BiToHex(pOutData, nOutLen, ppOutData, pOutLen))
 	{
 		fprintf(stderr, "BiToHex failed\n");
@@ -474,7 +475,7 @@ static int AESDecrypt(const char *pKey, int nKeyLen, const char* pInData,
 			fprintf(stderr, "malloc memory failed: %d(%s)\n", errno, strerror(errno));
 			return -1;
 		}
-		bzero(*ppOutData, nInLen + 1);
+		memset(*ppOutData, 0, nInLen + 1);
 	}
 	else if (*pOutLen < nInLen)
 	{
@@ -540,7 +541,7 @@ static int HexToBi(const char *pHexBuf, int nHexLen, char **ppBinBuf, int *pBinL
     		fprintf(stderr, "malloc memory failed: %d(%s)\n", errno, strerror(errno));
     		return -1;
     	}
-    	bzero(*ppBinBuf, nBinLen + 1);
+    	memset(*ppBinBuf, 0, nBinLen + 1);
     }
     else if (*pBinLen < nBinLen)
     {
@@ -572,7 +573,7 @@ static int BiToHex(const char *pBinBuf, int nBinLen, char **pHexBuf, int *pHexLe
     		fprintf(stderr, "malloc memory failed: %d(%s)\n", errno, strerror(errno));
     		return -1;
     	}
-    	bzero(*pHexBuf, nHexLen + 1);
+    	memset(*pHexBuf, 0, nHexLen + 1);
     }
     else if (*pHexLen < nHexLen)
     {
